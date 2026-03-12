@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <p class="eyebrow">Daily Planner</p>
+      <h1>해야 할 일을 지금 정리하세요</h1>
+      <p class="hero-copy">
+        빠르게 추가하고, 우선순위를 정하고, 완료 상태를 관리할 수 있는 간단한 Todo 앱입니다.
+      </p>
+    </section>
+
+    <section class="panel composer-panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-label">Todo 작성</p>
+          <h2 id="form-title">새 할 일 추가</h2>
+        </div>
+        <button id="reset-button" class="ghost-button" type="button">입력 초기화</button>
+      </div>
+
+      <form id="todo-form" class="todo-form">
+        <div class="field">
+          <label for="title">제목</label>
+          <input id="title" name="title" type="text" maxlength="60" placeholder="예: 프로젝트 초안 작성">
+        </div>
+
+        <div class="field">
+          <label for="description">설명</label>
+          <textarea id="description" name="description" rows="3" maxlength="200" placeholder="상세 메모를 입력하세요"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="priority">우선순위</label>
+            <select id="priority" name="priority">
+              <option value="high">높음</option>
+              <option value="medium" selected>중간</option>
+              <option value="low">낮음</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="due-date">마감일</label>
+            <input id="due-date" name="dueDate" type="date">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tags">태그</label>
+          <input id="tags" name="tags" type="text" maxlength="80" placeholder="예: work, urgent">
+        </div>
+
+        <p id="form-error" class="form-error" aria-live="polite"></p>
+
+        <div class="form-actions">
+          <button id="submit-button" class="primary-button" type="submit">할 일 추가</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="panel-header panel-header-stack">
+        <div>
+          <p class="section-label">Todo 보드</p>
+          <h2>목록</h2>
+        </div>
+
+        <div class="summary">
+          <div class="summary-card">
+            <span class="summary-value" id="count-all">0</span>
+            <span class="summary-label">전체</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="count-active">0</span>
+            <span class="summary-label">진행 중</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="count-completed">0</span>
+            <span class="summary-label">완료</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filter-group" role="tablist" aria-label="Todo 필터">
+          <button class="filter-button active" type="button" data-filter="all">전체</button>
+          <button class="filter-button" type="button" data-filter="active">미완료</button>
+          <button class="filter-button" type="button" data-filter="completed">완료</button>
+        </div>
+
+        <div class="sort-group">
+          <label for="sort">정렬</label>
+          <select id="sort">
+            <option value="dueDate">마감일 순</option>
+            <option value="priority">우선순위 순</option>
+            <option value="createdAt">생성일 순</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="status-message" class="status-message" aria-live="polite"></p>
+      <div id="empty-state" class="empty-state">
+        <h3>아직 등록된 할 일이 없습니다</h3>
+        <p>첫 번째 Todo를 추가해 오늘 해야 할 일을 정리해보세요.</p>
+      </div>
+
+      <ul id="todo-list" class="todo-list"></ul>
+    </section>
+  </main>
+
+  <template id="todo-item-template">
+    <li class="todo-item">
+      <div class="todo-main">
+        <div class="todo-title-row">
+          <label class="checkbox-wrap">
+            <input class="toggle-complete" type="checkbox">
+            <span class="checkbox-custom"></span>
+          </label>
+          <div class="todo-heading">
+            <h3 class="todo-title"></h3>
+            <p class="todo-description"></p>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-badge priority-badge"></span>
+          <span class="meta-badge due-badge"></span>
+          <span class="meta-badge created-badge"></span>
+        </div>
+
+        <div class="tag-list"></div>
+      </div>
+
+      <div class="todo-actions">
+        <button class="edit-button ghost-button" type="button">수정</button>
+        <button class="delete-button danger-button" type="button">삭제</button>
+      </div>
+    </li>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

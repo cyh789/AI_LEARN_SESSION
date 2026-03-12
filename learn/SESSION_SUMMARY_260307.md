@@ -5,7 +5,7 @@
 - `poem.md`: 마크다운 시 파일 (이후 3월 시로 업데이트)
 
 ## 2) Git/브랜치 작업
-- 초기 커밋 생성 후 원격 저장소(`cyh789/ai_260307`)에 푸시
+- 초기 커밋 생성 후 원격 저장소(`cyh789/AI_LEARN_SESSION`)에 푸시
 - 기본 개발 브랜치를 `master`에서 `main`으로 전환
 - 원격 기본 브랜치도 `main`으로 변경
 - 원격 `master` 브랜치 삭제 완료
@@ -17,7 +17,7 @@
 - `ded3f27`: `poem.md` 내용(3월 시) 업데이트
 
 ## 4) PR 작업
-- `developer -> main` PR 생성: https://github.com/cyh789/ai_260307/pull/1
+- `developer -> main` PR 생성: https://github.com/cyh789/AI_LEARN_SESSION/pull/1
 - PR 제목/내용 수정 요청 반영
   - 제목: `20260307 pr 제목`
   - 내용: `20260307 pr 내용`

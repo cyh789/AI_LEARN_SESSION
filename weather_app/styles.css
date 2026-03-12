@@ -8,9 +8,6 @@
   --line: rgba(19, 32, 43, 0.1);
   --accent: #005f73;
   --accent-strong: #0a3f4a;
-  --accent-soft: #d9eff4;
-  --warm: #f28f3b;
-  --rain: #3d6ea8;
   --shadow: 0 24px 50px rgba(25, 45, 62, 0.14);
   --radius-xl: 30px;
   --radius-lg: 22px;
@@ -169,16 +166,6 @@ button {
   font-weight: 700;
 }
 
-.field-help {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-
-.field-wide {
-  grid-column: span 1;
-}
-
 .inline-field,
 .action-group {
   display: flex;
@@ -246,46 +233,6 @@ select:focus {
 .status-message {
   min-height: 24px;
   margin: 14px 0 8px;
-}
-
-.search-results {
-  display: grid;
-  gap: 8px;
-}
-
-.search-result-empty {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.search-result-button {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(19, 32, 43, 0.08);
-  background: rgba(255, 255, 255, 0.78);
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.16s ease, background-color 0.16s ease;
-}
-
-.search-result-button:hover {
-  transform: translateY(-1px);
-  background: rgba(217, 239, 244, 0.72);
-}
-
-.search-result-title {
-  display: block;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.search-result-meta {
-  display: block;
-  margin-top: 3px;
-  font-size: 0.88rem;
-  color: var(--muted);
 }
 
 .dashboard {

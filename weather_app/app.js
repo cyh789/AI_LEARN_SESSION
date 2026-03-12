@@ -1,44 +1,22 @@
 const STORAGE_KEY = "weather-brief-settings";
-const SCHEDULER_INTERVAL_MS = 5 * 60 * 1000;
-const DEFAULT_SETTINGS = {
-  city: "Seoul",
-  label: "서울",
-  latitude: null,
-  longitude: null,
-  briefingTime: "07:30",
-  notifications: "on",
-  autoScheduler: "off",
-  useCurrentLocation: false,
+const SCHEDULER_INTERVAL_MS = 1 * 60 * 1000;
+const REVERSE_GEOCODE_DISTANCE_THRESHOLD = 0.003;
+const CURRENT_POSITION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 15000,
+  maximumAge: 0,
 };
+const {
+  KOREAN_LOCATION_ALIASES,
+  REGION_ALIASES,
+  DEFAULT_SETTINGS,
+  WEATHER_CODES,
+} = window.WEATHER_APP_CONSTANTS;
 
-const WEATHER_CODES = {
-  0: { label: "맑음", icon: "☀️" },
-  1: { label: "대체로 맑음", icon: "🌤️" },
-  2: { label: "부분적으로 흐림", icon: "⛅" },
-  3: { label: "흐림", icon: "☁️" },
-  45: { label: "안개", icon: "🌫️" },
-  48: { label: "서리 안개", icon: "🌫️" },
-  51: { label: "약한 이슬비", icon: "🌦️" },
-  53: { label: "이슬비", icon: "🌦️" },
-  55: { label: "강한 이슬비", icon: "🌧️" },
-  61: { label: "약한 비", icon: "🌦️" },
-  63: { label: "비", icon: "🌧️" },
-  65: { label: "강한 비", icon: "🌧️" },
-  71: { label: "약한 눈", icon: "🌨️" },
-  73: { label: "눈", icon: "🌨️" },
-  75: { label: "강한 눈", icon: "❄️" },
-  80: { label: "소나기", icon: "🌦️" },
-  81: { label: "강한 소나기", icon: "🌧️" },
-  82: { label: "매우 강한 소나기", icon: "⛈️" },
-  95: { label: "뇌우", icon: "⛈️" },
-  96: { label: "우박 동반 뇌우", icon: "⛈️" },
-  99: { label: "강한 우박 동반 뇌우", icon: "⛈️" },
-};
-
+// 화면 갱신에 사용하는 주요 DOM 요소를 한곳에서 관리한다.
 const elements = {
   searchForm: document.querySelector("#search-form"),
   cityInput: document.querySelector("#city-input"),
-  searchResults: document.querySelector("#search-results"),
   briefingTime: document.querySelector("#briefing-time"),
   notificationToggle: document.querySelector("#notification-toggle"),
   schedulerButton: document.querySelector("#scheduler-button"),
@@ -66,11 +44,11 @@ const elements = {
 let state = {
   settings: loadSettings(),
   forecast: [],
-  searchCandidates: [],
 };
 
 let schedulerId = null;
 
+// localStorage에 저장된 사용자 설정을 불러오고, 없으면 기본값으로 시작한다.
 function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -89,6 +67,7 @@ function saveSettings() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings));
 }
 
+// 사용자에게 현재 진행 상황이나 오류를 짧게 안내한다.
 function setStatus(message, isError = false) {
   elements.statusMessage.textContent = message;
   elements.statusMessage.style.color = isError ? "#a63f3f" : "";
@@ -107,6 +86,41 @@ function formatTimeLabel(value) {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+}
+
+// 브리핑 알림의 중복 발송을 막기 위해 오늘 날짜 키를 만든다.
+function getTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function uniqueParts(parts) {
+  return parts.filter((part, index) => part && parts.indexOf(part) === index);
+}
+
+function buildSearchResultLabel(displayName, admin1, country) {
+  return uniqueParts([displayName, admin1, country]).join(" ");
+}
+
+// 한국어 지역 입력은 상위 도시/광역시 이름으로 정규화해서 검색 성공률을 높인다.
+function normalizeSearchKeyword(keyword) {
+  const trimmed = keyword.trim();
+  if (KOREAN_LOCATION_ALIASES[trimmed]) {
+    return KOREAN_LOCATION_ALIASES[trimmed];
+  }
+
+  const parts = trimmed
+    .split(/[,\s]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length >= 2) {
+    const region = REGION_ALIASES[parts[0]];
+    if (region) {
+      return region;
+    }
+  }
+
+  return trimmed;
 }
 
 function getWeatherMeta(code) {
@@ -175,6 +189,7 @@ function buildInsights(days) {
   return insights;
 }
 
+// 7일 예보 카드를 템플릿 기반으로 다시 그린다.
 function renderForecast(days) {
   elements.forecastGrid.innerHTML = "";
 
@@ -193,6 +208,7 @@ function renderForecast(days) {
   });
 }
 
+// 첫 번째 예보 데이터를 기준으로 오늘의 요약 카드와 인사이트를 갱신한다.
 function renderSummary(days) {
   if (!days.length) {
     return;
@@ -224,6 +240,7 @@ function syncSchedulerButton() {
   elements.schedulerButton.classList.toggle("is-on", isOn);
 }
 
+// 현재 선택 지역, 마지막 업데이트 시간, 브리핑 상태를 헤더에 반영한다.
 function renderMeta() {
   elements.currentLocation.textContent = state.settings.label;
   elements.briefingStatus.textContent = state.settings.notifications === "on"
@@ -245,6 +262,7 @@ function hydrateControls() {
   syncSchedulerButton();
 }
 
+// 외부 API가 완전히 실패했을 때 화면을 비우지 않기 위한 예시 예보 데이터다.
 function createFallbackForecast(label) {
   const baseDate = new Date();
   const seed = label.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
@@ -278,21 +296,12 @@ function normalizeForecast(daily) {
   }));
 }
 
-async function fetchCoordinatesByCity(city) {
-  const results = await fetchLocationCandidates(city, 1);
-  const result = results[0];
-
-  if (!result) {
-    throw new Error("검색 결과가 없습니다.");
-  }
-
-  return result;
-}
-
-async function fetchLocationCandidates(city, count = 5) {
+// 도시 검색어를 좌표로 변환한다.
+async function fetchCoordinatesByCity(city, displayName = city) {
+  const normalizedCity = normalizeSearchKeyword(city);
   const params = new URLSearchParams({
-    name: city,
-    count: String(count),
+    name: normalizedCity,
+    count: "1",
     language: "ko",
     format: "json",
   });
@@ -303,16 +312,22 @@ async function fetchLocationCandidates(city, count = 5) {
   }
 
   const data = await response.json();
-  return (data.results || []).map((result) => ({
+  const result = data.results?.[0];
+
+  if (!result) {
+    throw new Error("검색 결과가 없습니다.");
+  }
+
+  return {
     latitude: result.latitude,
     longitude: result.longitude,
-    label: [result.name, result.admin1, result.country].filter(Boolean).join(", "),
-    city: result.name,
-    country: result.country || "",
-    admin1: result.admin1 || "",
-  }));
+    label: buildSearchResultLabel(displayName, result.admin1, result.country),
+    city: normalizedCity,
+    searchDisplayName: displayName,
+  };
 }
 
+// 위도/경도 기준으로 7일 예보를 가져온다.
 async function fetchForecastByCoordinates(latitude, longitude) {
   const params = new URLSearchParams({
     latitude: String(latitude),
@@ -331,6 +346,7 @@ async function fetchForecastByCoordinates(latitude, longitude) {
   return normalizeForecast(data.daily);
 }
 
+// 현재 위치를 사람에게 보여줄 지역명으로 바꾸기 위해 역지오코딩을 호출한다.
 async function fetchNearbyCityName(latitude, longitude) {
   const params = new URLSearchParams({
     lat: String(latitude),
@@ -366,11 +382,11 @@ async function fetchNearbyCityName(latitude, longitude) {
     throw new Error("Nearby city not found");
   }
 
-  const country = address.country || "";
-  return [city, country].filter(Boolean).join(", ");
+  return city;
 }
 
-function getCurrentPosition() {
+// 브라우저 위치 권한을 요청하고 현재 좌표를 받아온다.
+function getCurrentPosition(options = CURRENT_POSITION_OPTIONS) {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error("Geolocation is not supported"));
@@ -380,23 +396,61 @@ function getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(
       (position) => resolve(position.coords),
       () => reject(new Error("Location permission denied")),
-      { enableHighAccuracy: false, timeout: 10000 },
+      options,
     );
   });
 }
 
-async function updateLocationLabelFromCoordinates(latitude, longitude) {
+// 좌표 변화가 작으면 역지오코딩을 반복 호출하지 않도록 임계값으로 비교한다.
+function hasMovedMeaningfully(latitude, longitude) {
+  if (state.settings.lastResolvedLatitude == null || state.settings.lastResolvedLongitude == null) {
+    return true;
+  }
+
+  const latDiff = Math.abs(latitude - state.settings.lastResolvedLatitude);
+  const lonDiff = Math.abs(longitude - state.settings.lastResolvedLongitude);
+  return latDiff >= REVERSE_GEOCODE_DISTANCE_THRESHOLD || lonDiff >= REVERSE_GEOCODE_DISTANCE_THRESHOLD;
+}
+
+// 현재 위치의 표시용 지역명을 갱신하고, 실패하면 좌표 문자열로 대체한다.
+async function updateLocationLabelFromCoordinates(latitude, longitude, options = {}) {
+  const { force = false } = options;
+
+  if (!force && !hasMovedMeaningfully(latitude, longitude) && state.settings.label) {
+    return;
+  }
+
   try {
     const label = await fetchNearbyCityName(latitude, longitude);
     state.settings.label = label;
     state.settings.city = label;
+    state.settings.searchDisplayName = label;
+    state.settings.lastResolvedLatitude = latitude;
+    state.settings.lastResolvedLongitude = longitude;
   } catch (error) {
     console.error(error);
     state.settings.label = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
     state.settings.city = state.settings.label;
+    state.settings.searchDisplayName = state.settings.label;
+    state.settings.lastResolvedLatitude = latitude;
+    state.settings.lastResolvedLongitude = longitude;
   }
 }
 
+// 예보 조회 실패 시 마지막 성공 데이터 유지 또는 fallback 표시를 담당한다.
+function handleForecastFailure(message) {
+  if (!state.forecast.length) {
+    state.forecast = createFallbackForecast(state.settings.label);
+    renderAll();
+    setStatus(message, true);
+    return;
+  }
+
+  renderAll();
+  setStatus(`${message} 마지막 성공 데이터를 유지합니다.`, true);
+}
+
+// 검색 지역 또는 저장된 좌표 기준으로 예보를 불러온다.
 async function loadForecast(options = {}) {
   const { silent = false, useStoredCoordinates = true } = options;
 
@@ -410,7 +464,10 @@ async function loadForecast(options = {}) {
     if (useStoredCoordinates && state.settings.latitude != null && state.settings.longitude != null) {
       forecast = await fetchForecastByCoordinates(state.settings.latitude, state.settings.longitude);
     } else {
-      const location = await fetchCoordinatesByCity(state.settings.city);
+      const location = await fetchCoordinatesByCity(
+        state.settings.city,
+        state.settings.searchDisplayName || state.settings.city,
+      );
       state.settings = {
         ...state.settings,
         ...location,
@@ -426,42 +483,7 @@ async function loadForecast(options = {}) {
     maybeSendMorningNotification();
   } catch (error) {
     console.error(error);
-    state.forecast = createFallbackForecast(state.settings.label);
-    renderAll();
-    setStatus("실시간 예보를 불러오지 못해 예시 데이터를 표시했습니다.", true);
-  }
-}
-
-async function loadForecastForCurrentLocation(options = {}) {
-  const { silent = false, schedulerRun = false } = options;
-
-  if (!silent) {
-    setStatus(schedulerRun ? "자동 스케줄러가 현재 위치 날씨를 갱신하는 중입니다." : "현재 위치를 확인하는 중입니다.");
-  }
-
-  try {
-    const coords = await getCurrentPosition();
-    state.settings.latitude = coords.latitude;
-    state.settings.longitude = coords.longitude;
-    state.settings.useCurrentLocation = true;
-    await updateLocationLabelFromCoordinates(coords.latitude, coords.longitude);
-    saveSettings();
-
-    state.forecast = await fetchForecastByCoordinates(coords.latitude, coords.longitude);
-    renderAll();
-    setStatus(
-      schedulerRun
-        ? `자동 스케줄러가 ${state.settings.label} 기준 예보를 갱신했습니다.`
-        : `${state.settings.label} 기준으로 예보를 업데이트했습니다.`,
-    );
-    maybeSendMorningNotification();
-  } catch (error) {
-    console.error(error);
-    if (!state.forecast.length) {
-      state.forecast = createFallbackForecast(state.settings.label);
-      renderAll();
-    }
-    setStatus("현재 위치를 가져오지 못했습니다. 도시 검색을 사용하세요.", true);
+    handleForecastFailure("실시간 예보를 불러오지 못했습니다.");
   }
 }
 
@@ -472,45 +494,72 @@ function stopScheduler() {
   }
 }
 
-function clearSearchResults(message = "검색 가능한 도시 후보가 여기 표시됩니다.") {
-  state.searchCandidates = [];
-  elements.searchResults.innerHTML = `<p class="search-result-empty">${message}</p>`;
+// 위치 기반 자동 갱신을 더 이상 진행할 수 없을 때 스케줄러를 안전하게 끈다.
+function disableScheduler(message) {
+  stopScheduler();
+  state.settings.autoScheduler = "off";
+  saveSettings();
+  renderMeta();
+  setStatus(message, true);
 }
 
-function renderSearchResults(candidates) {
-  state.searchCandidates = candidates;
+// 현재 위치를 다시 읽고, 그 좌표 기준 예보와 지역명을 함께 갱신한다.
+async function loadForecastForCurrentLocation(options = {}) {
+  const {
+    silent = false,
+    schedulerRun = false,
+    disableSchedulerOnFailure = false,
+    forceLabelRefresh = false,
+  } = options;
 
-  if (!candidates.length) {
-    clearSearchResults("검색 결과가 없습니다. 영어 도시명으로 다시 시도해보세요.");
-    return;
+  if (!silent) {
+    setStatus(
+      schedulerRun
+        ? "자동 스케줄러가 현재 위치 날씨를 갱신하는 중입니다."
+        : "현재 위치를 확인하는 중입니다.",
+    );
   }
 
-  elements.searchResults.innerHTML = candidates
-    .map(
-      (candidate, index) => `
-        <button class="search-result-button" type="button" data-index="${index}">
-          <span class="search-result-title">${candidate.city}</span>
-          <span class="search-result-meta">${candidate.label}</span>
-        </button>
-      `,
-    )
-    .join("");
+  try {
+    const coords = await getCurrentPosition();
+    state.settings.latitude = coords.latitude;
+    state.settings.longitude = coords.longitude;
+    state.settings.useCurrentLocation = true;
+    await updateLocationLabelFromCoordinates(coords.latitude, coords.longitude, {
+      force: forceLabelRefresh,
+    });
+    saveSettings();
+
+    state.forecast = await fetchForecastByCoordinates(coords.latitude, coords.longitude);
+    renderAll();
+    setStatus(
+      schedulerRun
+        ? `자동 스케줄러가 ${state.settings.label} 기준 예보를 갱신했습니다.`
+        : `${state.settings.label} 기준으로 예보를 업데이트했습니다.`,
+    );
+    maybeSendMorningNotification();
+    return true;
+  } catch (error) {
+    console.error(error);
+    handleForecastFailure("현재 위치 날씨를 불러오지 못했습니다.");
+
+    if (disableSchedulerOnFailure && state.settings.autoScheduler === "on") {
+      disableScheduler("현재 위치를 확인할 수 없어 자동 스케줄러를 껐습니다.");
+    }
+
+    return false;
+  }
 }
 
-async function applyLocationSelection(location) {
-  state.settings.city = location.city;
-  state.settings.label = location.label;
-  state.settings.latitude = location.latitude;
-  state.settings.longitude = location.longitude;
-  state.settings.useCurrentLocation = false;
-  saveSettings();
-  await loadForecast({ silent: true, useStoredCoordinates: true });
-}
-
+// 자동 스케줄러는 한 개의 interval만 유지하면서 주기적으로 현재 위치를 갱신한다.
 function startScheduler() {
   stopScheduler();
   schedulerId = window.setInterval(() => {
-    loadForecastForCurrentLocation({ silent: true, schedulerRun: true });
+    loadForecastForCurrentLocation({
+      silent: true,
+      schedulerRun: true,
+      disableSchedulerOnFailure: true,
+    });
   }, SCHEDULER_INTERVAL_MS);
 }
 
@@ -523,6 +572,7 @@ function applySchedulerState() {
   syncSchedulerButton();
 }
 
+// 현재 상태값을 기준으로 화면 전체를 다시 렌더링한다.
 function renderAll() {
   hydrateControls();
   renderMeta();
@@ -530,6 +580,7 @@ function renderAll() {
   renderForecast(state.forecast);
 }
 
+// 브라우저 알림 권한을 요청하고, 허용되면 즉시 브리핑 테스트를 보낼 수 있다.
 async function requestNotificationPermission() {
   if (!("Notification" in window)) {
     setStatus("이 브라우저는 알림을 지원하지 않습니다.", true);
@@ -547,6 +598,7 @@ async function requestNotificationPermission() {
   setStatus("알림 권한이 허용되지 않았습니다.", true);
 }
 
+// 같은 날짜에는 한 번만 아침 브리핑 알림을 보내도록 제한한다.
 function maybeSendMorningNotification(force = false) {
   if (state.settings.notifications !== "on") return;
   if (!("Notification" in window) || Notification.permission !== "granted") return;
@@ -557,14 +609,21 @@ function maybeSendMorningNotification(force = false) {
 
   if (!force && !isTargetTime) return;
 
+  const todayKey = getTodayKey();
+  if (!force && state.settings.lastNotificationDate === todayKey) return;
+
   const today = state.forecast[0];
   if (!today) return;
 
   const meta = getWeatherMeta(today.weatherCode);
   const body = `${state.settings.label}: ${meta.label}, ${Math.round(today.temperatureMax)}° / ${Math.round(today.temperatureMin)}°, 강수 확률 ${today.precipitationProbability}%`;
+
   new Notification("오늘의 아침 날씨 브리핑", { body });
+  state.settings.lastNotificationDate = todayKey;
+  saveSettings();
 }
 
+// 검색, 새로고침, 현재 위치, 알림, 자동 스케줄러 관련 사용자 이벤트를 연결한다.
 function bindEvents() {
   elements.searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -575,48 +634,21 @@ function bindEvents() {
       return;
     }
 
-    try {
-      setStatus("검색 가능한 도시 후보를 찾는 중입니다.");
-      const candidates = await fetchLocationCandidates(city, 5);
-      renderSearchResults(candidates);
+    const normalizedCity = normalizeSearchKeyword(city);
 
-      if (!candidates.length) {
-        setStatus("검색 결과가 없습니다. 영어 도시명으로 다시 시도해보세요.", true);
-        return;
-      }
-
-      if (candidates.length === 1) {
-        await applyLocationSelection(candidates[0]);
-        setStatus(`${candidates[0].label}을(를) 선택해 예보를 불러왔습니다.`);
-        return;
-      }
-
-      setStatus("검색 결과가 여러 개입니다. 아래 후보 중 하나를 선택하세요.");
-    } catch (error) {
-      console.error(error);
-      clearSearchResults("도시 후보를 불러오지 못했습니다.");
-      setStatus("도시 후보를 불러오지 못했습니다.", true);
-    }
-  });
-
-  elements.searchResults.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-index]");
-    if (!button) {
-      return;
-    }
-
-    const location = state.searchCandidates[Number(button.dataset.index)];
-    if (!location) {
-      return;
-    }
-
-    await applyLocationSelection(location);
-    setStatus(`${location.label}을(를) 선택해 예보를 불러왔습니다.`);
+    state.settings.city = normalizedCity;
+    state.settings.label = city;
+    state.settings.searchDisplayName = city;
+    state.settings.latitude = null;
+    state.settings.longitude = null;
+    state.settings.useCurrentLocation = false;
+    saveSettings();
+    await loadForecast({ silent: true, useStoredCoordinates: false });
   });
 
   elements.refreshButton.addEventListener("click", async () => {
     if (state.settings.useCurrentLocation) {
-      await loadForecastForCurrentLocation();
+      await loadForecastForCurrentLocation({ forceLabelRefresh: true });
       return;
     }
 
@@ -624,7 +656,7 @@ function bindEvents() {
   });
 
   elements.locationButton.addEventListener("click", async () => {
-    await loadForecastForCurrentLocation();
+    await loadForecastForCurrentLocation({ forceLabelRefresh: true });
   });
 
   elements.notificationButton.addEventListener("click", async () => {
@@ -632,16 +664,29 @@ function bindEvents() {
   });
 
   elements.schedulerButton.addEventListener("click", async () => {
-    state.settings.autoScheduler = state.settings.autoScheduler === "on" ? "off" : "on";
+    if (state.settings.autoScheduler === "on") {
+      state.settings.autoScheduler = "off";
+      saveSettings();
+      applySchedulerState();
+      setStatus("자동 스케줄러를 껐습니다.");
+      return;
+    }
+
+    const loaded = await loadForecastForCurrentLocation({
+      schedulerRun: true,
+      disableSchedulerOnFailure: false,
+      forceLabelRefresh: true,
+    });
+
+    if (!loaded) {
+      disableScheduler("현재 위치를 확인할 수 없어 자동 스케줄러를 켜지 않았습니다.");
+      return;
+    }
+
+    state.settings.autoScheduler = "on";
     saveSettings();
     applySchedulerState();
-
-    if (state.settings.autoScheduler === "on") {
-      await loadForecastForCurrentLocation({ schedulerRun: true });
-      setStatus("자동 스케줄러를 켰습니다. 5분마다 현재 위치 날씨를 갱신합니다.");
-    } else {
-      setStatus("자동 스케줄러를 껐습니다.");
-    }
+    setStatus("자동 스케줄러를 켰습니다. 1분마다 현재 위치 날씨를 갱신합니다.");
   });
 
   elements.briefingTime.addEventListener("change", () => {
@@ -663,15 +708,21 @@ function bindEvents() {
   });
 }
 
+// 초기 진입 시 저장된 설정을 복원하고, 조건에 따라 첫 예보를 조회한다.
 async function init() {
   bindEvents();
   hydrateControls();
   applySchedulerState();
-  clearSearchResults();
 
   if (state.settings.autoScheduler === "on" || state.settings.useCurrentLocation) {
-    await loadForecastForCurrentLocation({ silent: true });
-    return;
+    const loaded = await loadForecastForCurrentLocation({
+      silent: true,
+      disableSchedulerOnFailure: state.settings.autoScheduler === "on",
+    });
+
+    if (loaded) {
+      return;
+    }
   }
 
   await loadForecast({ silent: true });

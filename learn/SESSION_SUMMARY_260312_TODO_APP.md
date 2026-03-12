@@ -1,7 +1,7 @@
 # 작업 요약 문서 (2026-03-12)
 
 ## 1) 대상 프로젝트
-- 경로: `C:\Users\drsgg\OneDrive\Desktop\workspace\2026\ai_260307\todo_app`
+- 경로: `C:\Users\drsgg\OneDrive\Desktop\workspace\2026\AI_LEARN_SESSION\todo_app`
 - 주요 파일:
   - `server.js`: 정적 파일 서빙용 Node HTTP 서버
   - `app.js`: Todo 상태 관리 및 브라우저 저장 로직
@@ -9,7 +9,7 @@
 
 ## 2) 서버 실행 관련 확인 사항
 - 사용자가 원한 기본 실행 명령은 아래와 같음:
-  - `cd C:\Users\drsgg\OneDrive\Desktop\workspace\2026\ai_260307\todo_app`
+  - `cd C:\Users\drsgg\OneDrive\Desktop\workspace\2026\AI_LEARN_SESSION\todo_app`
   - `node server.js`
 - `node server.js`를 직접 실행했을 때 정상적으로 아래 메시지를 확인함:
   - `Server running at http://localhost:8000/`

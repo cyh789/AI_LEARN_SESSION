@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morning Weather Brief</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <!-- 상단 소개와 현재 선택 지역 상태를 보여주는 영역 -->
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Morning Weather Brief</p>
+        <h1>매일 아침, 이번 주 날씨를 한 번에 확인하세요</h1>
+        <p class="hero-text">
+          오늘 요약과 7일 예보를 함께 보여주는 브라우저 기반 날씨 앱입니다.
+          도시 검색 또는 현재 위치를 사용해 아침 브리핑 화면을 구성할 수 있습니다.
+        </p>
+      </div>
+
+      <div class="hero-status">
+        <div class="status-card">
+          <span class="status-label">선택 지역</span>
+          <strong id="current-location">서울</strong>
+        </div>
+        <div class="status-card">
+          <span class="status-label">마지막 업데이트</span>
+          <strong id="last-updated">-</strong>
+        </div>
+        <div class="status-card">
+          <span class="status-label">아침 브리핑</span>
+          <strong id="briefing-status">오전 7:30</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- 검색, 알림, 자동 스케줄러 등 사용자가 직접 조작하는 설정 영역 -->
+    <section class="panel controls-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="section-label">설정</p>
+          <h2>지역과 알림 시간</h2>
+        </div>
+        <button id="refresh-button" class="ghost-button" type="button">새로고침</button>
+      </div>
+
+      <form id="search-form" class="controls-grid">
+        <label class="field field-wide">
+          <span>도시 검색</span>
+          <div class="inline-field">
+            <input
+              id="city-input"
+              name="city"
+              type="text"
+              placeholder="예: Seoul, Busan, Tokyo"
+              autocomplete="off"
+            >
+            <button class="primary-button" type="submit">검색</button>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>아침 브리핑 시간</span>
+          <input id="briefing-time" name="briefingTime" type="time" value="07:30">
+        </label>
+
+        <label class="field">
+          <span>알림 사용</span>
+          <select id="notification-toggle" name="notifications">
+            <option value="on">사용</option>
+            <option value="off">사용 안 함</option>
+          </select>
+        </label>
+
+        <div class="field">
+          <span>자동 스케줄러</span>
+          <button
+            id="scheduler-button"
+            class="toggle-button"
+            type="button"
+            aria-pressed="false"
+          >
+            OFF
+          </button>
+        </div>
+
+        <div class="field field-actions">
+          <span>빠른 동작</span>
+          <div class="action-group">
+            <button id="location-button" class="ghost-button" type="button">현재 위치 사용</button>
+            <button id="notification-button" class="ghost-button" type="button">알림 권한 요청</button>
+          </div>
+        </div>
+      </form>
+
+      <p id="status-message" class="status-message" aria-live="polite"></p>
+      <p class="support-copy">
+        브라우저 앱 특성상 앱이 닫혀 있을 때의 OS 수준 푸시는 제공하지 않습니다.
+        대신 브리핑 시간 저장, 브라우저 알림 권한, 다음 브리핑 상태를 확인할 수 있습니다.
+      </p>
+    </section>
+
+    <!-- 오늘 요약과 이번 주 핵심 포인트를 함께 보여주는 대시보드 -->
+    <section class="dashboard">
+      <article class="panel summary-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-label">오늘의 브리핑</p>
+            <h2 id="summary-date">-</h2>
+          </div>
+          <span id="summary-badge" class="summary-badge">준비 중</span>
+        </div>
+
+        <div class="summary-main">
+          <div class="summary-icon" id="summary-icon" aria-hidden="true">⛅</div>
+          <div>
+            <p id="summary-condition" class="summary-condition">날씨 정보를 불러오는 중입니다.</p>
+            <p id="summary-temp" class="summary-temp">-</p>
+            <p id="summary-advice" class="summary-advice">잠시만 기다려주세요.</p>
+          </div>
+        </div>
+
+        <div class="summary-metrics">
+          <div class="metric-card">
+            <span class="metric-label">강수 확률</span>
+            <strong id="rain-chance">-</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">우산 추천</span>
+            <strong id="umbrella-need">-</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">추천 옷차림</span>
+            <strong id="clothing-tip">-</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel insight-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-label">이번 주 포인트</p>
+            <h2>주간 인사이트</h2>
+          </div>
+        </div>
+
+        <ul id="insight-list" class="insight-list"></ul>
+      </article>
+    </section>
+
+    <!-- 7일 예보를 카드 형태로 렌더링하는 영역 -->
+    <section class="panel forecast-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="section-label">7일 예보</p>
+          <h2>이번 주 날씨</h2>
+        </div>
+      </div>
+
+      <div id="forecast-grid" class="forecast-grid"></div>
+    </section>
+  </main>
+
+  <!-- JavaScript에서 날짜별 예보 카드를 복제할 때 사용하는 템플릿 -->
+  <template id="forecast-card-template">
+    <article class="forecast-card">
+      <p class="forecast-day"></p>
+      <p class="forecast-date"></p>
+      <div class="forecast-icon"></div>
+      <p class="forecast-condition"></p>
+      <p class="forecast-temp"></p>
+      <p class="forecast-rain"></p>
+    </article>
+  </template>
+
+  <!-- 상수 정의를 먼저 로드하고, 이후 앱 로직을 실행한다 -->
+  <script src="weather-constants.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

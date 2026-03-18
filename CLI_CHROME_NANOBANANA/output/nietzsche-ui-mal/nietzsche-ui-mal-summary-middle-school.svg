@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <style>
+      .bg { fill: #f6f2ea; }
+      .title { font: 700 40px "Malgun Gothic", sans-serif; fill: #1b1b1b; }
+      .subtitle { font: 600 22px "Malgun Gothic", sans-serif; fill: #5a4a3a; }
+      .card { fill: #ffffff; stroke: #e0d6c8; stroke-width: 2; rx: 18; }
+      .cardTitle { font: 700 20px "Malgun Gothic", sans-serif; fill: #2a2a2a; }
+      .cardText { font: 400 16px "Malgun Gothic", sans-serif; fill: #3a3a3a; }
+      .accent { fill: #d89c6b; }
+      .line { stroke: #e0d6c8; stroke-width: 2; }
+      .footer { font: 400 14px "Malgun Gothic", sans-serif; fill: #6b5b4b; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="800"/>
+  <rect class="accent" x="0" y="0" width="1200" height="14"/>
+
+  <text class="title" x="60" y="85">니체의 말 — 중학생도 이해하는 요약</text>
+  <text class="subtitle" x="60" y="120">핵심 메시지를 한눈에 보는 시각 정리</text>
+
+  <line class="line" x1="60" y1="150" x2="1140" y2="150"/>
+
+  <rect class="card" x="60" y="190" width="520" height="210"/>
+  <text class="cardTitle" x="90" y="230">1. 한 가지 핵심</text>
+  <text class="cardText" x="90" y="265">남이 정한 길이 아니라</text>
+  <text class="cardText" x="90" y="290">내가 선택하고 책임지는 삶</text>
+  <text class="cardText" x="90" y="315">을 살자는 이야기</text>
+
+  <rect class="card" x="620" y="190" width="520" height="210"/>
+  <text class="cardTitle" x="650" y="230">2. 고통의 의미</text>
+  <text class="cardText" x="650" y="265">힘든 경험은 피해야 할 것보다</text>
+  <text class="cardText" x="650" y="290">나를 단단하게 만드는 재료</text>
+  <text class="cardText" x="650" y="315">로 볼 수 있음</text>
+
+  <rect class="card" x="60" y="430" width="520" height="210"/>
+  <text class="cardTitle" x="90" y="470">3. 나만의 기준</text>
+  <text class="cardText" x="90" y="505">남이 한다고 무조건 따라가기보다</text>
+  <text class="cardText" x="90" y="530">내가 중요하게 여기는 기준</text>
+  <text class="cardText" x="90" y="555">을 먼저 세우기</text>
+
+  <rect class="card" x="620" y="430" width="520" height="210"/>
+  <text class="cardTitle" x="650" y="470">4. 자유와 책임</text>
+  <text class="cardText" x="650" y="505">자유는 마음대로 하는 것이 아니라</text>
+  <text class="cardText" x="650" y="530">스스로 선택하고 결과를 감당</text>
+  <text class="cardText" x="650" y="555">하는 태도</text>
+
+  <text class="footer" x="60" y="720">실천 팁: 오늘 내가 중요하게 생각한 일을 한 줄로 적기 · 작은 결정부터 책임지기</text>
+  <text class="footer" x="60" y="745">요약: 스스로 선택하고 성장하는 힘을 키우자</text>
+</svg>

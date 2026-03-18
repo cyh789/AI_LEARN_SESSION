@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "38085a2da37b4ee8",
+    "type": "split",
+    "children": [
+      {
+        "id": "390e5c3fa10a3016",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "49403d265ca34bef",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "CLI_CHROME_NANOBANANA/output/to-have-or-to-be-summary-pepe/to-have-or-to-be-pepe.png"
+              },
+              "icon": "lucide-image",
+              "title": "to-have-or-to-be-pepe"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e7308adf8bbb6774",
+    "type": "split",
+    "children": [
+      {
+        "id": "1aee08560d415749",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "271e3ada96c10593",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "파일 탐색기"
+            }
+          },
+          {
+            "id": "81869274e07d992b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "검색"
+            }
+          },
+          {
+            "id": "cb4951fdfd1e8c5e",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "북마크"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 374.5
+  },
+  "right": {
+    "id": "a4337572702dacbf",
+    "type": "split",
+    "children": [
+      {
+        "id": "dc623301a46296de",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3931a237e820a8bd",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "output/nietzsche-ui-mal-infographic.png",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "nietzsche-ui-mal-infographic 의 백링크"
+            }
+          },
+          {
+            "id": "d1ef41231fb10e17",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "output/nietzsche-ui-mal-infographic.png",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "nietzsche-ui-mal-infographic 의 나가는 링크"
+            }
+          },
+          {
+            "id": "89083add93bddd31",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "태그"
+            }
+          },
+          {
+            "id": "2ae8c0f9809e0fd8",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "모든 속성"
+            }
+          },
+          {
+            "id": "9bff98afc0c6292f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "output/nietzsche-ui-mal-infographic.png",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "nietzsche-ui-mal-infographic 의 개요"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
+    }
+  },
+  "active": "49403d265ca34bef",
+  "lastOpenFiles": [
+    "CLI_CHROME_NANOBANANA/output/to-have-or-to-be-summary-ghibli/to-have-or-to-be-infographic.png",
+    "CLI_CHROME_NANOBANANA/output/to-have-or-to-be-summary-pepe/to-have-or-to-be-pepe.png",
+    "CLI_CHROME_NANOBANANA/output/to-have-or-to-be-summary-pepe",
+    "CLI_CHROME_NANOBANANA/files/to-have-or-to-be-summary-pepe/to-have-or-to-be-summary.md",
+    "CLI_CHROME_NANOBANANA/files/to-have-or-to-be-summary-pepe",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-pepe/pepe-infographic.png",
+    "CLI_CHROME_NANOBANANA/output/geupryu-summary-ghibli/geupryu-infographic.png",
+    "CLI_CHROME_NANOBANANA/output/choyeok-nietzsche-mal-pepe/choyeok-nietzsche-mal-pepe.png",
+    "CLI_CHROME_NANOBANANA/output/jung-daegun-geupryu/jung-daegun-geupryu-pepe.png",
+    "CLI_CHROME_NANOBANANA/output/jung-daegun-geupryu/jung-daegun-geupryu-infographic.png",
+    "CLI_CHROME_NANOBANANA/output/geupryu-summary-ghibli",
+    "CLI_CHROME_NANOBANANA/files/geupryu-summary-ghibli/geupryu-summary.md",
+    "CLI_CHROME_NANOBANANA/files/geupryu-summary-ghibli",
+    "book-summary-infographic/SKILL.md",
+    "book-summary-infographic/references",
+    "book-summary-infographic",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-ghibli/infographic.png",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-pepe",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-ghibli",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-misc/pepe-infographic.png",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-misc/infographic.png",
+    "CLI_CHROME_NANOBANANA/output/nietzsche-ui-mal-misc",
+    "CLI_CHROME_NANOBANANA/output/2026-03-14T05-09-48-514Z/choyeok-nietzsche-mal-pepe.png",
+    "CLI_CHROME_NANOBANANA/output/choyeok-nietzsche-mal-pepe",
+    "CLI_CHROME_NANOBANANA/files/choyeok-nietzsche-mal-pepe/choyeok-nietzsche-mal-summary.md",
+    "CLI_CHROME_NANOBANANA/files/2026-03-14T05-09-48-514Z/choyeok-nietzsche-mal-summary.md",
+    "CLI_CHROME_NANOBANANA/files/choyeok-nietzsche-mal/choyeok-nietzsche-mal-summary.md",
+    "CLI_CHROME_NANOBANANA/files/choyeok-nietzsche-mal-summary.md",
+    "AGENTS.md",
+    "CLI_CHROME_NANOBANANA/files/jung-daegun-geupryu/jung-daegun-geupryu-summary.md",
+    "CLI_CHROME_NANOBANANA/files/nietzsche-ui-mal/nietzsche-ui-mal-summary-middle-school.md",
+    "CLI_CHROME_NANOBANANA/files/nietzsche-ui-mal/nietzsche-ui-mal-summary.md",
+    "FILE_BASED_APP/spec.md",
+    "FILE_BASED_APP/README.md",
+    "FILE_BASED_APP/plan.md",
+    "CLI_CHROME_NANOBANANA/files/nietzsche-ui-mal-summary.md",
+    "CLI_CHROME_NANOBANANA/files/nietzsche-ui-mal-summary-middle-school.md",
+    "CLI_CHROME_NANOBANANA/files/jung-daegun-geupryu-summary.md",
+    "CLI_CHROME_NANOBANANA/README.md",
+    "WEATHER_APP/WEATHER_APP_SPEC_260312.md",
+    "TODO_APP/todo_app_spec.md",
+    "LEARN/SESSION_SUMMARY_260312_WEATHER_APP.md",
+    "LEARN/SESSION_SUMMARY_260312_TODO_APP.md",
+    "LEARN/SESSION_SUMMARY_260307.md",
+    "cli_chrome_nanobanana/files/jung-daegun-geupryu-summary.md",
+    "cli_chrome_nanobanana/files/nietzsche-ui-mal-summary.md"
+  ]
+}

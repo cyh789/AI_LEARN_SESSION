@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pepe Pepe Infographic"
+  short_description: "Generate pepe-style infographics from summaries"
+  default_prompt: "Use the pepe infographic workflow to create a visual from the provided summary."
